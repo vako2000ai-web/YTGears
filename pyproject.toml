@@ -1,0 +1,16 @@
+[project]
+name = "ytgears"
+version = "0.2.0"
+description = "Gear & Porcelain: a Python 3D mechanism for YouTube streams"
+requires-python = ">=3.11"
+dependencies = ["panda3d==1.10.16", "panda3d-simplepbr==0.13.1"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ytgears"]
+
+[tool.ruff]
+line-length = 120
