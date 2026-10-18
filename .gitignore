@@ -1,7 +1,11 @@
+.venv/
+__pycache__/
+*.py[cod]
+.cache/
+tmp/
+output/
 **/bin/
 **/obj/
 .dotnet-home/
-tmp/
-output/
 .vs/
 *.user
