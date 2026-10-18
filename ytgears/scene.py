@@ -154,7 +154,7 @@ class GearPorcelainApp(ShowBase):
         gold = (.78, .59, .31, 1)
         self.header = DirectLabel(parent=self.ui, text="GEAR & PORCELAIN", scale=.067,
                                   text_fg=gold, frameColor=(0, 0, 0, 0), text_align=TextNode.A_left, pos=(-1.67, 0, .84))
-        DirectLabel(parent=self.ui, text="МЕТАЛЛ  /  ВРЕМЯ  /  ХРУПКИЙ ФАРФОР", scale=.024,
+        DirectLabel(parent=self.ui, text="METAL  /  TIME  /  FRAGILE PORCELAIN", scale=.024,
                     text_fg=(.50, .58, .63, 1), frameColor=(0, 0, 0, 0), text_align=TextNode.A_left, pos=(-1.66, 0, .775))
         self.mode_label = DirectLabel(parent=self.ui, text="", scale=.025, text_align=TextNode.A_right,
                                       text_fg=gold, frameColor=(0, 0, 0, 0), pos=(1.66, 0, .86))
@@ -167,8 +167,8 @@ class GearPorcelainApp(ShowBase):
         self.progress_bar = DirectWaitBar(parent=self.ui, range=100, value=0, frameSize=(-1.66, 1.66, -.007, .007),
                                           frameColor=(.09, .13, .16, 1), barColor=gold, pos=(0, 0, -.64), relief=None)
         self.bottom = DirectFrame(parent=self.ui, frameColor=(.015, .027, .040, .97), frameSize=(-1.77, 1.77, -.35, 0), pos=(0, 0, -.69))
-        DirectLabel(parent=self.bottom, text="ВАЛЫ N", scale=.021, text_fg=(.55, .63, .7, 1), frameColor=(0, 0, 0, 0), pos=(-1.53, 0, -.055))
-        DirectLabel(parent=self.bottom, text="ВРЕМЯ T, СЕК", scale=.021, text_fg=(.55, .63, .7, 1), frameColor=(0, 0, 0, 0), pos=(-1.24, 0, -.055))
+        DirectLabel(parent=self.bottom, text="SHAFTS N", scale=.021, text_fg=(.55, .63, .7, 1), frameColor=(0, 0, 0, 0), pos=(-1.53, 0, -.055))
+        DirectLabel(parent=self.bottom, text="TIME T, SEC", scale=.021, text_fg=(.55, .63, .7, 1), frameColor=(0, 0, 0, 0), pos=(-1.24, 0, -.055))
         entry_style = dict(parent=self.bottom, scale=.038, width=4.5, numLines=1, frameColor=(.065, .09, .115, 1), text_fg=(.9, .93, .95, 1), entryFont=self.font)
         self.gears_entry = DirectEntry(**entry_style, initialText=str(5 if self.args.demo else self.args.gears), pos=(-1.61, 0, -.115))
         self.time_entry = DirectEntry(**entry_style, initialText=str(180 if self.args.demo else self.args.seconds), pos=(-1.33, 0, -.115))
@@ -176,17 +176,17 @@ class GearPorcelainApp(ShowBase):
             return DirectButton(parent=self.bottom, text=text, text_scale=.026, text_fg=(.86, .89, .91, 1),
                                 frameColor=(.11, .15, .18, 1), frameSize=(-width / 2, width / 2, -.043, .043),
                                 relief=None, pos=(x, 0, -.09), command=command, pressEffect=True)
-        button("НОВЫЙ РАУНД", -.78, self._apply_settings, .43)
-        self.pause_button = button("ПАУЗА", -.34, self._toggle_pause)
-        button("+1 USD · ДЕМО", .12, self._donate, .48)
-        button("ЗРИТЕЛИ +10", .64, self._more_viewers, .46)
-        button("ДЕМО 30 СЕК", 1.18, lambda: self._start_round(True), .47)
+        button("NEW ROUND", -.78, self._apply_settings, .43)
+        self.pause_button = button("PAUSE", -.34, self._toggle_pause)
+        button("+1 USD · DEMO", .12, self._donate, .48)
+        button("VIEWERS +10", .64, self._more_viewers, .46)
+        button("30 SEC DEMO", 1.18, lambda: self._start_round(True), .47)
         self.info_label = DirectLabel(parent=self.bottom, text="", scale=.024, text_align=TextNode.A_left,
                                       text_fg=(.60, .69, .75, 1), frameColor=(0, 0, 0, 0), pos=(-1.64, 0, -.19))
-        DirectLabel(parent=self.bottom, text="F2 — чистый кадр   ·   F11 — полный экран   ·   M — музыка   ·   колесо — масштаб   ·   ЛКМ — поворот",
+        DirectLabel(parent=self.bottom, text="F2 — clean view   ·   F11 — fullscreen   ·   M — music   ·   scroll — zoom   ·   drag — orbit",
                     scale=.021, text_align=TextNode.A_left, text_fg=(.40, .49, .56, 1), frameColor=(0, 0, 0, 0), pos=(-1.64, 0, -.27))
         self.result_panel = DirectFrame(parent=self.ui, frameColor=(.018, .032, .047, .97), frameSize=(-.83, .83, -.43, .43), pos=(0, 0, .13))
-        DirectLabel(parent=self.result_panel, text="ФАРФОР УСТУПИЛ ВРЕМЕНИ", scale=.046, text_fg=gold,
+        DirectLabel(parent=self.result_panel, text="PORCELAIN YIELDS TO TIME", scale=.046, text_fg=gold,
                     frameColor=(0, 0, 0, 0), pos=(0, 0, .29))
         self.result_text = DirectLabel(parent=self.result_panel, text="", scale=.035, text_fg=(.79, .85, .90, 1),
                                        frameColor=(0, 0, 0, 0), text_align=TextNode.A_left, pos=(-.65, 0, .16))
@@ -248,12 +248,12 @@ class GearPorcelainApp(ShowBase):
         intact = vase_mesh(); intact.reparent_to(self.vase); intact.set_material(self.porcelain, 1); intact.set_texture(self.texture, 1)
         self.vase.set_pos(self.vase_pos); self.vase.show()
         self.paused, self.presentation_seconds = False, 0.0
-        self.pause_button["text"] = "ПАУЗА"
+        self.pause_button["text"] = "PAUSE"
         self.result_panel.hide(); self.error_label["text"] = ""
         self.gears_entry.enterText(str(parameters.gear_count)); self.time_entry.enterText(f"{parameters.target_seconds:g}")
-        self.mode_label["text"] = "ИНТЕРАКТИВНЫЙ 3D-ПРОТОТИП  /  ЛОКАЛЬНЫЕ СОБЫТИЯ"
+        self.mode_label["text"] = "INTERACTIVE 3D PROTOTYPE  /  LOCAL EVENTS"
         pairs = " · ".join(f"{a}:{b}" for a, b in transmission.stage_teeth)
-        self.transmission_label["text"] = f"{parameters.gear_count} валов · {2 * (parameters.gear_count - 1)} колёс · целые зубья {pairs} · точное T"
+        self.transmission_label["text"] = f"{parameters.gear_count} shafts · {2 * (parameters.gear_count - 1)} wheels · integer teeth {pairs} · exact T"
         if "mechanism" in self.sounds: self.sounds["mechanism"].play()
         if "music" in self.sounds: self.sounds["music"].set_volume(.14)
         self._last_time = time.perf_counter()
@@ -269,7 +269,7 @@ class GearPorcelainApp(ShowBase):
     def _toggle_pause(self):
         if self.round.phase != RoundPhase.RUNNING: return
         self.paused = not self.paused
-        self.pause_button["text"] = "ПРОДОЛЖИТЬ" if self.paused else "ПАУЗА"
+        self.pause_button["text"] = "RESUME" if self.paused else "PAUSE"
         self.pause_button["text_scale"] = .021 if self.paused else .026
         if "mechanism" in self.sounds:
             self.sounds["mechanism"].set_volume(0 if self.paused else .11)
@@ -333,12 +333,12 @@ class GearPorcelainApp(ShowBase):
         self.round.complete_destruction()
         r = self.round.result
         minutes, seconds = divmod(r.actual_seconds_to_impact, 60)
-        self.result_text["text"] = (f"До контакта: {int(minutes):02d}:{seconds:05.2f}\n"
-                                    f"Донатов: {r.donation_count}     Сумма: {r.donation_total_usd} USD\n"
-                                    f"Пик имитируемого онлайна: {r.observed_peak_concurrent_viewers}\n"
-                                    f"Уникальные зрители: недоступно\n"
-                                    f"Уникальные ускорившие: недоступно\n"
-                                    f"Максимальная скорость: ×{r.max_applied_multiplier:.2f}")
+        self.result_text["text"] = (f"Time to impact: {int(minutes):02d}:{seconds:05.2f}\n"
+                                    f"Donations: {r.donation_count}     Total: {r.donation_total_usd} USD\n"
+                                    f"Peak simulated viewers: {r.observed_peak_concurrent_viewers}\n"
+                                    f"Unique viewers: unavailable\n"
+                                    f"Unique accelerating viewers: unavailable\n"
+                                    f"Maximum speed: ×{r.max_applied_multiplier:.2f}")
         self.result_panel.show()
         if "music" in self.sounds: self.sounds["music"].set_volume(.14 if self.music_enabled else 0)
 
@@ -377,11 +377,11 @@ class GearPorcelainApp(ShowBase):
                 self._show_results(); self._camera_position()
         elapsed = self.round.elapsed_seconds
         self.clock_label["text"] = f"{int(elapsed // 60):02d}:{int(elapsed % 60):02d}"
-        state = "ПАУЗА" if self.paused else {RoundPhase.RUNNING: "Механизм взводится", RoundPhase.DESTRUCTION: "УДАР · ФАРФОР", RoundPhase.RESULTS: "ИТОГИ РАУНДА"}.get(self.round.phase, "Контакт")
+        state = "PAUSE" if self.paused else {RoundPhase.RUNNING: "Winding mechanism", RoundPhase.DESTRUCTION: "IMPACT · PORCELAIN", RoundPhase.RESULTS: "ROUND RESULTS"}.get(self.round.phase, "Impact")
         self.status_label["text"] = f"{state}   ·   ×{self.round.applied_multiplier:.2f}"
         self.progress_bar["value"] = self.round.progress * 100
-        self.info_label["text"] = (f"Онлайн (имитация): {self.viewers}    ·    Донаты (имитация): {self.round.donation_count} / {self.round.donation_total_usd} USD"
-                                   f"    ·    Предварительно: Mv=1+0.1(V−1), донат ×2 без накопления, предел ×64")
+        self.info_label["text"] = (f"Viewers (simulated): {self.viewers}    ·    Donations (simulated): {self.round.donation_count} / {self.round.donation_total_usd} USD"
+                                   f"    ·    Provisional: Mv=1+0.1(V−1), non-stacking donation ×2, cap ×64")
         self._capture_frames += 1
         if self.args.capture and self._capture_frames >= (90 if self.args.capture_impact else 8):
             path = Path(self.args.capture).resolve(); path.parent.mkdir(parents=True, exist_ok=True)

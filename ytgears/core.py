@@ -12,29 +12,29 @@ MONEY_MAX = Decimal("79228162514264337593543950335")
 
 def finite(value: float, name: str, minimum=0, maximum=1e12) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float, Decimal)):
-        raise ValueError(f"{name}: требуется число")
+        raise ValueError(f"{name}: a number is required")
     value = float(value)
     if not math.isfinite(value) or not minimum <= value <= maximum:
-        raise ValueError(f"{name}: допустимо {minimum}..{maximum}")
+        raise ValueError(f"{name}: allowed range {minimum}..{maximum}")
     return value
 
 
 def integer(value: int, name: str, minimum=0, maximum=2**31 - 1) -> int:
     if type(value) is not int or not minimum <= value <= maximum:
-        raise ValueError(f"{name}: требуется целое {minimum}..{maximum}")
+        raise ValueError(f"{name}: an integer is required in {minimum}..{maximum}")
     return value
 
 
 def money(value) -> Decimal:
     # Reject binary float money: JSON is parsed directly into Decimal.
     if isinstance(value, (float, bool)):
-        raise ValueError("Сумма USD: используйте Decimal, строку или целое")
+        raise ValueError("USD amount: use Decimal, a string or an integer")
     try:
         amount = Decimal(value)
     except (ValueError, TypeError, ArithmeticError) as exc:
-        raise ValueError("Некорректная сумма USD") from exc
+        raise ValueError("Invalid USD amount") from exc
     if not amount.is_finite() or amount <= 0 or amount > MONEY_MAX or amount.as_tuple().exponent < -28:
-        raise ValueError("Сумма USD вне поддерживаемого диапазона Decimal")
+        raise ValueError("USD amount is outside the supported Decimal range")
     return amount
 
 
@@ -43,7 +43,7 @@ def add_money(a: Decimal, b: Decimal) -> Decimal:
         ctx.prec = 80
         result = a + b
     if result > MONEY_MAX:
-        raise OverflowError("Общая сумма USD превышает поддерживаемый диапазон")
+        raise OverflowError("Total USD exceeds the supported range")
     return result
 
 
@@ -56,7 +56,7 @@ class RoundParameters:
         integer(self.gear_count, "N", 2, 4096)
         value = finite(self.target_seconds, "T", 12)
         if value <= 12:
-            raise ValueError("T должно быть больше 12 секунд")
+            raise ValueError("T must be greater than 12 seconds")
         object.__setattr__(self, "target_seconds", value)
 
 
@@ -120,16 +120,16 @@ class Transmission:
         else:
             pairs = tuple(tuple(pair) for pair in self.stage_teeth)
             if len(pairs) != n - 1:
-                raise ValueError("Число зубчатых пар должно равняться N−1")
+                raise ValueError("The number of gear pairs must equal N−1")
             periods = [12.0]
             for driver, driven in pairs:
                 integer(driver, "driver_teeth", 12, 120)
                 integer(driven, "driven_teeth", 12, 120)
                 if driven <= driver:
-                    raise ValueError("Каждая ступень должна замедлять")
+                    raise ValueError("Every stage must reduce speed")
                 periods.append(periods[-1] * driven / driver)
             if not math.isclose(periods[-1], target, rel_tol=1e-12):
-                raise ValueError("Зубчатая передача несовместима с T")
+                raise ValueError("The gear train is incompatible with T")
             object.__setattr__(self, "stage_teeth", pairs)
         periods[0], periods[-1] = 12.0, target
         object.__setattr__(self, "periods_seconds", tuple(periods))
@@ -164,7 +164,7 @@ def physical_transmission(parameters: RoundParameters) -> Transmission:
     rather than drawing meshing teeth with incompatible speeds.
     """
     if parameters.gear_count > 12:
-        raise ValueError("В 3D поддерживается от 2 до 12 расчётных валов")
+        raise ValueError("The 3D scene supports 2 to 12 shafts")
     total = Fraction(str(parameters.target_seconds)) / 12
     stages = parameters.gear_count - 1
     ideal = float(total) ** (1 / stages)
@@ -179,7 +179,7 @@ def physical_transmission(parameters: RoundParameters) -> Transmission:
         if final:
             repeated = pair(ratio)
             return Transmission(parameters, (repeated,) * (stages - 1) + (final,))
-    raise ValueError("Для N/T не найдена компактная передача 12..120 зубьев. Измените N или T; пример: N=8, T=1800")
+    raise ValueError("No compact 12–120-tooth gear train found for N/T. Change N or T; example: N=8, T=1800")
 
 
 class RoundPhase(StrEnum):
@@ -211,9 +211,9 @@ class Donation:
     def __post_init__(self):
         for name in ("round_id", "provider", "event_id", "currency"):
             if not isinstance(getattr(self, name), str) or not getattr(self, name).strip():
-                raise ValueError(f"{name}: требуется непустая строка")
+                raise ValueError(f"{name}: a non-empty string is required")
         if type(self.confirmed) is not bool:
-            raise ValueError("confirmed: требуется true/false")
+            raise ValueError("confirmed: true/false is required")
         object.__setattr__(self, "amount", money(self.amount))
         object.__setattr__(self, "currency", self.currency.upper())
 
@@ -233,7 +233,7 @@ class RoundResult:
     viewer_data_gap_observed: bool
     unique_viewers: None = None
     unique_accelerating_viewers: None = None
-    viewer_metric_status: str = "Недоступно: одновременный онлайн не определяет уникальных зрителей"
+    viewer_metric_status: str = "Unavailable: concurrent viewer counts do not identify unique viewers"
 
     @property
     def saved_seconds(self):
@@ -243,7 +243,7 @@ class RoundResult:
 class MechanismRound:
     def __init__(self, round_id: str, parameters=None, policy=None, transmission=None):
         if not isinstance(round_id, str) or not round_id.strip():
-            raise ValueError("Требуется round_id")
+            raise ValueError("round_id is required")
         self.round_id = round_id
         self.transmission = transmission or Transmission(parameters or RoundParameters())
         self.policy = policy or SpeedPolicy()
@@ -295,7 +295,7 @@ class MechanismRound:
         return True
 
     def receive_donation(self, donation: Donation):
-        if not isinstance(donation, Donation): raise ValueError("Требуется Donation")
+        if not isinstance(donation, Donation): raise ValueError("A Donation object is required")
         if donation.round_id != self.round_id: return DonationStatus.WRONG_ROUND
         if self.phase != RoundPhase.RUNNING: return DonationStatus.CLOSED
         if not donation.confirmed: return DonationStatus.UNCONFIRMED

@@ -16,20 +16,20 @@ POLICY_FIELDS = {
 
 
 def _fields(data, allowed, label):
-    if not isinstance(data, dict): raise ValueError(f"{label}: требуется JSON-объект")
+    if not isinstance(data, dict): raise ValueError(f"{label}: a JSON object is required")
     unknown = data.keys() - set(allowed)
-    if unknown: raise ValueError(f"{label}: неизвестные поля {', '.join(sorted(unknown))}")
+    if unknown: raise ValueError(f"{label}: unknown fields {', '.join(sorted(unknown))}")
 
 
 def load_scenario(path):
-    def invalid(value): raise ValueError(f"Недопустимое JSON-число: {value}")
+    def invalid(value): raise ValueError(f"Invalid JSON number: {value}")
     data = json.loads(Path(path).read_text(encoding="utf-8-sig"), parse_float=Decimal, parse_constant=invalid)
-    _fields(data, ("roundId", "gearCount", "targetSeconds", "stepSeconds", "policy", "events"), "Сценарий")
+    _fields(data, ("roundId", "gearCount", "targetSeconds", "stepSeconds", "policy", "events"), "Scenario")
     return data
 
 
 def run_scenario(data):
-    _fields(data, ("roundId", "gearCount", "targetSeconds", "stepSeconds", "policy", "events"), "Сценарий")
+    _fields(data, ("roundId", "gearCount", "targetSeconds", "stepSeconds", "policy", "events"), "Scenario")
     policy = data.get("policy", {})
     _fields(policy, POLICY_FIELDS, "policy")
     round_ = MechanismRound(data.get("roundId", "simulation"),
@@ -37,12 +37,12 @@ def run_scenario(data):
                             SpeedPolicy(**{POLICY_FIELDS[k]: v for k, v in policy.items()}))
     step = finite(data.get("stepSeconds", 1), "stepSeconds", .01)
     if round_.transmission.parameters.target_seconds / step > 10_000_000:
-        raise ValueError("Слишком много шагов; увеличьте stepSeconds")
+        raise ValueError("Too many steps; increase stepSeconds")
     events = data.get("events", [])
-    if not isinstance(events, list): raise ValueError("events: требуется массив")
+    if not isinstance(events, list): raise ValueError("events: an array is required")
     validated = []
     for event in events:
-        _fields(event, ("atSeconds", "type", "viewers", "roundId", "provider", "id", "amountUsd", "currency", "confirmed"), "Событие")
+        _fields(event, ("atSeconds", "type", "viewers", "roundId", "provider", "id", "amountUsd", "currency", "confirmed"), "Event")
         at = finite(event.get("atSeconds", 0), "atSeconds")
         if event.get("type") == "donation":
             payload = Donation(event.get("roundId", round_.round_id), event.get("provider", "simulator"),
@@ -51,7 +51,7 @@ def run_scenario(data):
             from .core import integer
             payload = event.get("viewers")
             if payload is not None: integer(payload, "viewers")
-        else: raise ValueError("type: ожидается viewers или donation")
+        else: raise ValueError("type: expected viewers or donation")
         validated.append((at, event["type"], payload))
     log = []
     for at, kind, payload in sorted(validated, key=lambda e: e[0]):
@@ -71,7 +71,7 @@ def run_scenario(data):
     candidate = round_.transmission.approximate_teeth()
     tooth = asdict(candidate)
     tooth["wheel_count"] = candidate.wheel_count
-    return {"mode": "SIMULATION — предварительные политики, без YouTube и реальных платежей",
+    return {"mode": "SIMULATION — provisional policies, no YouTube or real payments",
             "configuration": data, "result": result, "tooth_candidate": tooth,
             "impact_count": round_.impact_count, "final_phase": round_.phase, "event_log": log}
 
