@@ -1,0 +1,8 @@
+{
+  "roundId": "baseline-30min",
+  "gearCount": 8,
+  "targetSeconds": 1800,
+  "stepSeconds": 1,
+  "policy": { "viewerTimeoutSeconds": 3600 },
+  "events": [ { "atSeconds": 0, "type": "viewers", "viewers": 1 } ]
+}

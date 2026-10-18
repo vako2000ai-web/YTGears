@@ -1,0 +1,18 @@
+{
+  "roundId": "experimental-not-approved",
+  "gearCount": 5,
+  "targetSeconds": 180,
+  "stepSeconds": 3,
+  "policy": {
+    "donationRule": "WholeDollarsDoubling",
+    "donationDurationSeconds": 10,
+    "maximumMultiplier": 8,
+    "viewerTimeoutSeconds": 300
+  },
+  "events": [
+    { "atSeconds": 0, "type": "viewers", "viewers": 1 },
+    { "atSeconds": 1, "type": "donation", "id": "fraction-1", "amountUsd": 0.4 },
+    { "atSeconds": 2, "type": "donation", "id": "fraction-2", "amountUsd": 0.6 },
+    { "atSeconds": 3, "type": "donation", "id": "large", "amountUsd": 1000000 }
+  ]
+}

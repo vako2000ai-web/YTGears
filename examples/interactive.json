@@ -1,0 +1,26 @@
+{
+  "roundId": "interactive-demo",
+  "gearCount": 8,
+  "targetSeconds": 1800,
+  "stepSeconds": 0.25,
+  "policy": {
+    "viewerSlope": 0.1,
+    "viewerTransitionSeconds": 2,
+    "viewerTimeoutSeconds": 30,
+    "maximumMultiplier": 64,
+    "donationRule": "SingleBoost",
+    "donationDurationSeconds": null
+  },
+  "events": [
+    { "atSeconds": 0, "type": "viewers", "viewers": 1 },
+    { "atSeconds": 10, "type": "viewers", "viewers": 11 },
+    { "atSeconds": 20, "type": "donation", "id": "payment-1", "amountUsd": 1 },
+    { "atSeconds": 21, "type": "donation", "id": "payment-1", "amountUsd": 1 },
+    { "atSeconds": 22, "type": "donation", "id": "payment-1", "amountUsd": 9 },
+    { "atSeconds": 25, "type": "donation", "id": "pending-1", "amountUsd": 10, "confirmed": false },
+    { "atSeconds": 35, "type": "viewers", "viewers": 31 },
+    { "atSeconds": 45, "type": "viewers", "viewers": null },
+    { "atSeconds": 60, "type": "donation", "id": "payment-2", "amountUsd": 0.5 },
+    { "atSeconds": 1800, "type": "donation", "id": "too-late", "amountUsd": 1 }
+  ]
+}

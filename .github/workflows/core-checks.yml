@@ -1,0 +1,34 @@
+name: Core checks
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+      DOTNET_NOLOGO: '1'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build
+        run: dotnet build YTGears.sln -c Release --disable-build-servers -m:1
+      - name: Domain and replay checks
+        run: dotnet run --project tests/YTGears.Checks -c Release --no-build
+      - name: Baseline scenario
+        run: dotnet run --project src/YTGears.Simulator -c Release --no-build -- examples/baseline.json --json
+      - name: Interactive scenario
+        run: dotnet run --project src/YTGears.Simulator -c Release --no-build -- examples/interactive.json --json
+      - name: Experimental policies
+        run: dotnet run --project src/YTGears.Simulator -c Release --no-build -- examples/experimental-stacking.json --json
